@@ -188,7 +188,7 @@ open class AdvanceRecyclerView : RecyclerView {
 
     protected fun setOrientationFromAttr(attr: AttributeSet?) {
         val a = getStyledAttributes(attr)
-        val or = a.getInt(R.styleable.AdvanceRecyclerView_ar_orientation, -1)
+        val or = a.getInt(R.styleable.AdvanceRecyclerView_ar_adre_orientation, -1)
         if (or != -1)
             orientation = or
 
