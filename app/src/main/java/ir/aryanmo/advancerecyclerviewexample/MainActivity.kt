@@ -2,12 +2,9 @@ package ir.aryanmo.advancerecyclerviewexample
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v7.widget.helper.ItemTouchHelper
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import ir.aryanmo.advancerecyclerview.AdvanceRecyclerView
-import ir.aryanmo.advancerecyclerview.AdvanceRecyclerView2
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -28,19 +25,22 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
         re.init(R.layout.test_item, myList.size, null)
 
-        goTo.setOnClickListener { re.scrollToPos(10) }
+        goTo.setOnClickListener {
+            if (re.isInitialize) {
+                myList.add("saom")
+                myList.add("hlfg")
+                myList.add("sifkpasj")
+                myList.add("dop")
+                myList.add("rez")
+                re.notifyDataSetChanged(myList.size)
+            }
+        }
         smoothGoTo.setOnClickListener { re.smoothScrollToPos(10) }
+        re.isInitialize
 
 
-//        myList.add("saom")
-//        myList.add("hlfg")
-//        myList.add("sifkpasj")
-//        myList.add("dop")
-//        myList.add("rez")
-//        re.addNewItemCount(5)
     }
 
     private fun getList(): ArrayList<String> {

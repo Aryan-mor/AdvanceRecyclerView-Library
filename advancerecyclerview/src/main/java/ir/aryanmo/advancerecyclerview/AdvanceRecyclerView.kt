@@ -59,6 +59,7 @@ open class AdvanceRecyclerView : RecyclerView {
     protected val VIEW_TYPE_ITEM = 0
     protected val VIEW_TYPE_LOADING = 1
     protected var erisViewType = VIEW_TYPE_ITEM
+    var isInitialize = false
 
 
     val count: Int
@@ -153,6 +154,8 @@ open class AdvanceRecyclerView : RecyclerView {
                 processPagination(dx, dy)
             }
         })
+
+        isInitialize = true
     }
 
     protected fun processPagination(dx: Int, dy: Int) {
@@ -203,16 +206,16 @@ open class AdvanceRecyclerView : RecyclerView {
 
     // PROPERTIES
 
+    fun notifyDataSetChanged(newItemCount:Int){
+        addItemCount(newItemCount)
+    }
+
 
     fun addNewItemCount(newItemCount: Int) {
-        Log.e("Ari","new count -> $newItemCount")
-        Log.e("Ari","itemCount -> $itemCount")
         addItemCount(newItemCount + itemCount + 1)
     }
 
     fun addItemCount(itemCount: Int) {
-
-        Log.e("Ari","final -> $itemCount")
         this.itemCount = itemCount
         myAdapter.notifyDataSetChanged()
     }
