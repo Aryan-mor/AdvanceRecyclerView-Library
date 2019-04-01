@@ -5,5 +5,6 @@
             <flag name="VERTICAL" value="0" />
             <flag name="HORIZONTAL" value="1" />
         </attr>
+        <attr name="ar_adre_itemCount" format="integer"/>
     </declare-styleable>
 </resources>

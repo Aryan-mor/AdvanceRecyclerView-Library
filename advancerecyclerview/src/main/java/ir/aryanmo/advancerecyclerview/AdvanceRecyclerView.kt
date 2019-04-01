@@ -130,21 +130,24 @@ open class AdvanceRecyclerView : RecyclerView {
         setAttributes(attrs)
     }
 
-    fun init(@LayoutRes itemView: Int, itemCount: Int, linearLayoutManager: LinearLayoutManager?) {
+    fun init(
+        @LayoutRes itemView: Int, itemCount: Int = this.itemCount,
+        linearLayoutManager: LinearLayoutManager? = null
+    ) {
         var linearLayoutManager = linearLayoutManager
         this.itemView = itemView
-        if (linearLayoutManager == null) {
+        linearLayoutManager ?: let {
             linearLayoutManager = LinearLayoutManager(context)
         }
-        this.linearLayoutManager = linearLayoutManager
         init(itemCount)
     }
 
     fun init(itemCount: Int) {
-
-        Log.e("Ari","init itemCount -> $itemCount")
         this.itemCount = itemCount
-        Log.e("Ari","init this.itemCount -> ${this.itemCount}")
+        init()
+    }
+
+    private fun init() {
         adapter = myAdapter
         setCurrentPosition(0)
 
@@ -161,9 +164,6 @@ open class AdvanceRecyclerView : RecyclerView {
     protected fun processPagination(dx: Int, dy: Int) {
         if (paginationListener == null)
             return
-
-        Log.e("Aryan", " item pos -> " + linearLayoutManager.findFirstCompletelyVisibleItemPosition())
-
 
         if (linearLayoutManager.childCount + linearLayoutManager.findFirstVisibleItemPosition() >= layoutManager!!.itemCount) {
             paginationListener!!.onEndItemListener(this, dx, dy)
@@ -187,6 +187,7 @@ open class AdvanceRecyclerView : RecyclerView {
 
     protected fun setAttributes(attrs: AttributeSet?) {
         setOrientationFromAttr(attrs)
+        setItemCountFromAttr(attrs)
     }
 
     protected fun setOrientationFromAttr(attr: AttributeSet?) {
@@ -198,6 +199,13 @@ open class AdvanceRecyclerView : RecyclerView {
         a.recycle()
     }
 
+    protected fun setItemCountFromAttr(attr: AttributeSet?) {
+        val a = getStyledAttributes(attr)
+        val count = a.getInt(R.styleable.AdvanceRecyclerView_ar_adre_itemCount, 0)
+        itemCount = count + 1
+        a.recycle()
+    }
+
     protected fun getStyledAttributes(attr: AttributeSet?): TypedArray {
         return context.theme.obtainStyledAttributes(
             attr, R.styleable.AdvanceRecyclerView, 0, 0
@@ -206,7 +214,7 @@ open class AdvanceRecyclerView : RecyclerView {
 
     // PROPERTIES
 
-    fun notifyDataSetChanged(newItemCount:Int){
+    fun notifyDataSetChanged(newItemCount: Int) {
         addItemCount(newItemCount)
     }
 

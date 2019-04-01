@@ -32,6 +32,7 @@
             android:id="@+id/re"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:ar_adre_itemCount="5"
             android:text="Hello World!"/>
 
 </LinearLayout>
