@@ -143,11 +143,8 @@ open class AdvanceRecyclerView : RecyclerView {
     }
 
     fun init(itemCount: Int) {
-        this.itemCount = itemCount
-        init()
-    }
 
-    private fun init() {
+        this.itemCount = itemCount
         adapter = myAdapter
         setCurrentPosition(0)
 
@@ -187,7 +184,6 @@ open class AdvanceRecyclerView : RecyclerView {
 
     protected fun setAttributes(attrs: AttributeSet?) {
         setOrientationFromAttr(attrs)
-        setItemCountFromAttr(attrs)
     }
 
     protected fun setOrientationFromAttr(attr: AttributeSet?) {
@@ -196,13 +192,6 @@ open class AdvanceRecyclerView : RecyclerView {
         if (or != -1)
             orientation = or
 
-        a.recycle()
-    }
-
-    protected fun setItemCountFromAttr(attr: AttributeSet?) {
-        val a = getStyledAttributes(attr)
-        val count = a.getInt(R.styleable.AdvanceRecyclerView_ar_adre_itemCount, 0)
-        itemCount = count + 1
         a.recycle()
     }
 

@@ -2,12 +2,10 @@ package ir.aryanmo.advancerecyclerviewexample
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import ir.aryanmo.advancerecyclerview.AdvanceRecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlin.math.log
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,9 +25,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        Log.e("ary","1")
-        re.init(itemView = R.layout.test_item)
-        Log.e("ary","2")
+        re.init(R.layout.test_item, myList.size)
 
         goTo.setOnClickListener {
             if (re.isInitialize) {
