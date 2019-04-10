@@ -10,7 +10,6 @@ import android.support.v7.widget.helper.ItemTouchHelper
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
@@ -35,11 +34,15 @@ open class AdvanceRecyclerView : RecyclerView {
     @LayoutRes
     var loadingItemView = -1
         protected set
-    var itemCount = 0
-        set(value) {
-            field = value - 1
+    private var itemCount = 0
+
+    private fun setItemCount(itemCount: Int, notifyDataSetChange: Boolean = true) {
+        this.itemCount = itemCount - 1
+        if (notifyDataSetChange) {
             myAdapter.notifyDataSetChanged()
         }
+    }
+
     lateinit var linearLayoutManager: LinearLayoutManager
         protected set
     var isInfinite = false
@@ -67,7 +70,6 @@ open class AdvanceRecyclerView : RecyclerView {
     //Animation
     var itemAnimRes: Int = -1
     private var lastItemPosition = -1
-
 
 
     val count: Int
@@ -159,7 +161,7 @@ open class AdvanceRecyclerView : RecyclerView {
 
     fun init(itemCount: Int) {
 
-        this.itemCount = itemCount
+        setItemCount(itemCount)
         adapter = myAdapter
         setCurrentPosition(0)
 
@@ -227,17 +229,28 @@ open class AdvanceRecyclerView : RecyclerView {
         addItemCount(newItemCount)
     }
 
-    fun notifyItemInsert(newItemPosition: Int) {
+    fun notifyItemInsert(newItemPosition: Int, scrollToItem: Boolean = true) {
         myAdapter.notifyItemInserted(newItemPosition)
+        setItemCount(count + 1, false)
+        if (scrollToItem) {
+            smoothScrollToPos(newItemPosition)
+        }
+        Log.e("Ari", "notifyItemInsert -> $itemCount")
+    }
+
+    fun notifyItemRemove(itemPosition: Int) {
+        Log.e("Ari", "notifyItemInsert before remove -> $itemCount")
+        myAdapter.notifyItemRemoved(itemPosition)
+        setItemCount(count - 1, false)
+        Log.e("Ari", "notifyItemInsert before after -> $itemCount")
     }
 
     fun addNewItemCount(newItemCount: Int) {
-        addItemCount(newItemCount + itemCount + 1)
+        addItemCount(newItemCount + count)
     }
 
     fun addItemCount(itemCount: Int) {
-        this.itemCount = itemCount
-        myAdapter.notifyDataSetChanged()
+        setItemCount(itemCount)
     }
 
     fun getItemPositionOnInfinity(position: Int): Int {
@@ -312,6 +325,9 @@ open class AdvanceRecyclerView : RecyclerView {
         this.itemSwipeCallback = itemSwipeCallback
         if (!itemSwipeCallback.hasLeftLayout() && !itemSwipeCallback.hasRightLayout()) {
             throw Exception("ItemSwipeCallback must by setup left or right layout")
+        }
+        if (isInitialize) {
+            ItemTouchHelper(itemSwipeCallback).attachToRecyclerView(this)
         }
     }
 

@@ -4,6 +4,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import ir.aryanmo.advancerecyclerview.AdvanceRecyclerView
@@ -21,7 +22,6 @@ class MainActivity : AppCompatActivity() {
 
         val myList = getList()
 
-        re.setItemAnimation()
         re.onAdapterListener = object : AdvanceRecyclerView.OnAdapterListener {
 
             override fun onBindViewHolder(holder: AdvanceRecyclerView.ViewHolder, position: Int) {
@@ -33,10 +33,13 @@ class MainActivity : AppCompatActivity() {
         val itemSwipeCallback = ItemSwipeCallback(
             object : ItemSwipeCallback.OnSwipeItemListener {
                 override fun onSwipeToLeft(position: Int) {
+                    Log.e("Ari","remove -> $position -> ${myList[position]}")
                     lastItemPosition = position
                     lastItemName = myList[position]
+                    Log.e("Ari","myList before remove -> ${myList.size-1}")
                     myList.removeAt(position)
-                    re.notifyDataSetChanged(myList.size)
+                    re.notifyItemRemove(position)
+                    Log.e("Ari","myList after remove -> ${myList.size-1}")
                 }
 
                 override fun onSwipeToRight(position: Int) {
@@ -49,13 +52,16 @@ class MainActivity : AppCompatActivity() {
             ContextCompat.getDrawable(this, R.drawable.abc_ic_menu_cut_mtrl_alpha)!!,
             ColorDrawable(ContextCompat.getColor(this, R.color.colorPrimary))
         )
+
         itemSwipeCallback.setupSwipeRightLayout(
             ContextCompat.getDrawable(this, R.drawable.abc_ic_menu_share_mtrl_alpha)!!,
             ColorDrawable(ContextCompat.getColor(this, R.color.colorAccent))
         )
-        re.setSwipeListener(itemSwipeCallback)
 
+        re.setSwipeListener(itemSwipeCallback)
         re.init(R.layout.test_item, myList.size)
+
+        re.setItemAnimation()
 
         goTo.setOnClickListener {
 //            if (re.isInitialize) {
@@ -78,6 +84,54 @@ class MainActivity : AppCompatActivity() {
 
     private fun getList(): ArrayList<String> {
         val list = arrayListOf<String>()
+        list.add("salam")
+        list.add("kgobi")
+        list.add("chetori")
+        list.add("chekhabara")
+        list.add("chikara mikoni")
+        list.add("chikara nemikoni")
+        list.add("Ba Salam khdemat shoma")
+        list.add("ahmad")
+        list.add("Ali")
+        list.add("Aryan")
+        list.add("Farzin")
+        list.add("Moji")
+        list.add("mojtaba sh")
+        list.add("soheyl")
+        list.add("Bahram")
+        list.add("Sahand")
+        list.add("salam")
+        list.add("kgobi")
+        list.add("chetori")
+        list.add("chekhabara")
+        list.add("chikara mikoni")
+        list.add("chikara nemikoni")
+        list.add("Ba Salam khdemat shoma")
+        list.add("ahmad")
+        list.add("Ali")
+        list.add("Aryan")
+        list.add("Farzin")
+        list.add("Moji")
+        list.add("mojtaba sh")
+        list.add("soheyl")
+        list.add("Bahram")
+        list.add("Sahand")
+        list.add("salam")
+        list.add("kgobi")
+        list.add("chetori")
+        list.add("chekhabara")
+        list.add("chikara mikoni")
+        list.add("chikara nemikoni")
+        list.add("Ba Salam khdemat shoma")
+        list.add("ahmad")
+        list.add("Ali")
+        list.add("Aryan")
+        list.add("Farzin")
+        list.add("Moji")
+        list.add("mojtaba sh")
+        list.add("soheyl")
+        list.add("Bahram")
+        list.add("Sahand")
         list.add("salam")
         list.add("kgobi")
         list.add("chetori")

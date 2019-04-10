@@ -1,13 +1,13 @@
 package ir.aryanmo.advancerecyclerview
 
-import android.R
-import android.app.Activity
+import android.content.Context
 import android.graphics.Canvas
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.support.annotation.ColorRes
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
-import android.view.View
 
 
 class ItemSwipeCallback(private val mSwipeItemListener: OnSwipeItemListener, swipeDir: Int = LEFT_AND_RIGHT_DIR) :
@@ -201,6 +201,15 @@ class ItemSwipeCallback(private val mSwipeItemListener: OnSwipeItemListener, swi
     fun setupSwipeLeftLayout(leftIcon: Drawable, leftBackground: ColorDrawable): ItemSwipeCallback {
         this.leftIcon = leftIcon
         this.leftBackground = leftBackground
+        return this
+    }
+
+    fun setupSwipeLeftLayout(
+        context: Context,
+        leftIcon: Drawable, @ColorRes leftBackgroundRes: Int
+    ): ItemSwipeCallback {
+        this.leftIcon = leftIcon
+        this.leftBackground = ColorDrawable(ContextCompat.getColor(context, leftBackgroundRes))
         return this
     }
 
