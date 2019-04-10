@@ -36,7 +36,7 @@ open class AdvanceRecyclerView : RecyclerView {
         protected set
     private var itemCount = 0
 
-    private fun setItemCount(itemCount: Int, notifyDataSetChange: Boolean = true) {
+    fun setItemCount(itemCount: Int, notifyDataSetChange: Boolean = true) {
         this.itemCount = itemCount - 1
         if (notifyDataSetChange) {
             myAdapter.notifyDataSetChanged()
