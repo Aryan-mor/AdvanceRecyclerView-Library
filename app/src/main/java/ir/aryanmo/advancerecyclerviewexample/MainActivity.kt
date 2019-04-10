@@ -1,41 +1,74 @@
 package ir.aryanmo.advancerecyclerviewexample
 
-import android.support.v7.app.AppCompatActivity
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.TextView
 import ir.aryanmo.advancerecyclerview.AdvanceRecyclerView
+import ir.aryanmo.advancerecyclerview.ItemSwipeCallback
 import kotlinx.android.synthetic.main.activity_main.*
+
 
 class MainActivity : AppCompatActivity() {
 
+    var lastItemPosition = -1
+    var lastItemName = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         val myList = getList()
 
+        re.setItemAnimation()
         re.onAdapterListener = object : AdvanceRecyclerView.OnAdapterListener {
-            override fun onCreateViewHolder(): View? {
-                return null
-            }
 
             override fun onBindViewHolder(holder: AdvanceRecyclerView.ViewHolder, position: Int) {
+                super.onBindViewHolder(holder, position)
                 holder.itemView.findViewById<TextView>(R.id.text).text = myList[position]
             }
         }
 
+        val itemSwipeCallback = ItemSwipeCallback(
+            object : ItemSwipeCallback.OnSwipeItemListener {
+                override fun onSwipeToLeft(position: Int) {
+                    lastItemPosition = position
+                    lastItemName = myList[position]
+                    myList.removeAt(position)
+                    re.notifyDataSetChanged(myList.size)
+                }
+
+                override fun onSwipeToRight(position: Int) {
+                }
+            },
+            ItemSwipeCallback.LEFT_DIR
+        )
+
+        itemSwipeCallback.setupSwipeLeftLayout(
+            ContextCompat.getDrawable(this, R.drawable.abc_ic_menu_cut_mtrl_alpha)!!,
+            ColorDrawable(ContextCompat.getColor(this, R.color.colorPrimary))
+        )
+        itemSwipeCallback.setupSwipeRightLayout(
+            ContextCompat.getDrawable(this, R.drawable.abc_ic_menu_share_mtrl_alpha)!!,
+            ColorDrawable(ContextCompat.getColor(this, R.color.colorAccent))
+        )
+        re.setSwipeListener(itemSwipeCallback)
+
         re.init(R.layout.test_item, myList.size)
 
         goTo.setOnClickListener {
-            if (re.isInitialize) {
-                myList.add("saom")
-                myList.add("hlfg")
-                myList.add("sifkpasj")
-                myList.add("dop")
-                myList.add("rez")
-                re.notifyDataSetChanged(myList.size)
-            }
+//            if (re.isInitialize) {
+//                myList.add("saom")
+//                myList.add("hlfg")
+//                myList.add("sifkpasj")
+//                myList.add("dop")
+//                myList.add("rez")
+//                re.notifyDataSetChanged(myList.size)
+//            }
+
+            myList.add(lastItemPosition,lastItemName)
+            re.notifyItemInsert(lastItemPosition)
         }
         smoothGoTo.setOnClickListener { re.smoothScrollToPos(10) }
         re.isInitialize
@@ -63,4 +96,6 @@ class MainActivity : AppCompatActivity() {
         list.add("Sahand")
         return list
     }
+
+
 }

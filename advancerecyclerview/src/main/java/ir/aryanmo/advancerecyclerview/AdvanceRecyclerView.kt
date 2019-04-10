@@ -2,6 +2,7 @@ package ir.aryanmo.advancerecyclerview
 
 import android.content.Context
 import android.content.res.TypedArray
+import android.support.annotation.AnimRes
 import android.support.annotation.LayoutRes
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -12,9 +13,8 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import kotlin.collections.ArrayList
-import android.graphics.Color
-import java.util.*
+import android.view.animation.AnimationUtils
+
 
 open class AdvanceRecyclerView : RecyclerView {
     var orientation = 0
@@ -30,8 +30,6 @@ open class AdvanceRecyclerView : RecyclerView {
                 Exception("setOrientation value must be 0(AdvanceRecycleView.VERTICAL),1(AdvanceRecycleView.HORIZONTAL)")
             )
         }
-    //Getter and Setter
-
     @LayoutRes
     var itemView = -1
     @LayoutRes
@@ -44,10 +42,11 @@ open class AdvanceRecyclerView : RecyclerView {
         }
     lateinit var linearLayoutManager: LinearLayoutManager
         protected set
-
     var isInfinite = false
-    protected var itemListener: OnListItemListener? = null
     var onAdapterListener: OnAdapterListener? = null
+
+
+    //Pagination
     var onPaginationLoadingAdapterListener: OnPaginationLoadingAdapterListener? = null
     var paginationListener: OnPaginationListener? = null
         protected set
@@ -56,10 +55,19 @@ open class AdvanceRecyclerView : RecyclerView {
             field = value
             myAdapter.notifyDataSetChanged()
         }
+
     protected val VIEW_TYPE_ITEM = 0
     protected val VIEW_TYPE_LOADING = 1
-    protected var erisViewType = VIEW_TYPE_ITEM
+    protected var advanceViewType = VIEW_TYPE_ITEM
     var isInitialize = false
+
+    //Swipe
+    var itemSwipeCallback: ItemSwipeCallback? = null
+
+    //Animation
+    var itemAnimRes: Int = -1
+    private var lastItemPosition = -1
+
 
 
     val count: Int
@@ -71,13 +79,13 @@ open class AdvanceRecyclerView : RecyclerView {
     var myAdapter: RecyclerView.Adapter<*> = object : RecyclerView.Adapter<ViewHolder>() {
         override fun getItemViewType(position: Int): Int {
 
-            erisViewType =
+            advanceViewType =
                 if (!isInfinite && isPaginationLoadingNextPage && itemCount == position + 1) VIEW_TYPE_LOADING else VIEW_TYPE_ITEM
-            return erisViewType
+            return advanceViewType
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            if (erisViewType == VIEW_TYPE_ITEM) {
+            if (advanceViewType == VIEW_TYPE_ITEM) {
                 if (itemView != -1) {
                     val view = LayoutInflater.from(parent.context).inflate(itemView, parent, false)
                     return ViewHolder(view)
@@ -93,7 +101,14 @@ open class AdvanceRecyclerView : RecyclerView {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             var position = position
-            if (erisViewType == VIEW_TYPE_ITEM) {
+
+            if (itemAnimRes != -1) {
+                val animation = AnimationUtils.loadAnimation(context, itemAnimRes)
+                holder.itemView.startAnimation(animation)
+                lastItemPosition = position
+            }
+
+            if (advanceViewType == VIEW_TYPE_ITEM) {
                 if (onAdapterListener == null)
                     return
                 if (isInfinite) {
@@ -155,6 +170,9 @@ open class AdvanceRecyclerView : RecyclerView {
             }
         })
 
+        itemSwipeCallback?.let {
+            ItemTouchHelper(it).attachToRecyclerView(this)
+        }
         isInitialize = true
     }
 
@@ -180,6 +198,8 @@ open class AdvanceRecyclerView : RecyclerView {
 
         if (isInfinite)
             scrollToPos(firstItemPasOnInfinity)
+
+
     }
 
     protected fun setAttributes(attrs: AttributeSet?) {
@@ -207,6 +227,9 @@ open class AdvanceRecyclerView : RecyclerView {
         addItemCount(newItemCount)
     }
 
+    fun notifyItemInsert(newItemPosition: Int) {
+        myAdapter.notifyItemInserted(newItemPosition)
+    }
 
     fun addNewItemCount(newItemCount: Int) {
         addItemCount(newItemCount + itemCount + 1)
@@ -231,17 +254,25 @@ open class AdvanceRecyclerView : RecyclerView {
         //        lm.smoothScrollToPosition(this, null, pos);
     }
 
-    override fun onTouchEvent(e: MotionEvent): Boolean {
-        return super.onTouchEvent(e)
+    fun setItemAnimation(@AnimRes animRes: Int = android.R.anim.slide_in_left) {
+        itemAnimRes = animRes
+    }
+
+    fun enableItemAnim() {
+        setItemAnimation(android.R.anim.slide_in_left)
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     //Listener
     interface OnAdapterListener {
-        fun onCreateViewHolder(): View?
+        fun onCreateViewHolder(): View? {
+            return null
+        }
 
-        fun onBindViewHolder(holder: ViewHolder, position: Int)
+        fun onBindViewHolder(holder: ViewHolder, position: Int) {
+
+        }
     }
 
     interface OnPaginationLoadingAdapterListener {
@@ -274,6 +305,14 @@ open class AdvanceRecyclerView : RecyclerView {
 
     fun findLastVisibleItemPosition(): Int {
         return linearLayoutManager.findLastVisibleItemPosition()
+    }
+
+    //Swipe
+    fun setSwipeListener(itemSwipeCallback: ItemSwipeCallback) {
+        this.itemSwipeCallback = itemSwipeCallback
+        if (!itemSwipeCallback.hasLeftLayout() && !itemSwipeCallback.hasRightLayout()) {
+            throw Exception("ItemSwipeCallback must by setup left or right layout")
+        }
     }
 
     private fun logError(title: String, e: Exception) {
