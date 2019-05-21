@@ -109,32 +109,32 @@ class ItemSwipeCallback(private val mSwipeItemListener: OnSwipeItemListener, swi
 
     private fun a() {
 //
-//        val iconMargin = (itemView.height - leftIcon!!.intrinsicHeight) / 2
-//        val iconTop = itemView.top + (itemView.height - leftIcon!!.intrinsicHeight) / 2
+//        val iconMargin = (itemViewId.height - leftIcon!!.intrinsicHeight) / 2
+//        val iconTop = itemViewId.top + (itemViewId.height - leftIcon!!.intrinsicHeight) / 2
 //        val iconBottom = iconTop + leftIcon!!.intrinsicHeight
 //
 //        when {
 //
 //
 //            dX > 0 -> { // Swiping to the right
-//                val iconLeft = itemView.left + iconMargin + leftIcon!!.intrinsicWidth
-//                val iconRight = itemView.left + iconMargin
+//                val iconLeft = itemViewId.left + iconMargin + leftIcon!!.intrinsicWidth
+//                val iconRight = itemViewId.left + iconMargin
 //                leftIcon!!.setBounds(iconLeft, iconTop, iconRight, iconBottom)
 //
 //                leftBackground!!.setBounds(
-//                    itemView.left, itemView.top,
-//                    itemView.left + dX.toInt() + backgroundCornerOffset,
-//                    itemView.bottom
+//                    itemViewId.left, itemViewId.top,
+//                    itemViewId.left + dX.toInt() + backgroundCornerOffset,
+//                    itemViewId.bottom
 //                )
 //            }
 //            dX < 0 -> { // Swiping to the left
-//                val iconLeft = itemView.right - iconMargin - leftIcon!!.intrinsicWidth
-//                val iconRight = itemView.right - iconMargin
+//                val iconLeft = itemViewId.right - iconMargin - leftIcon!!.intrinsicWidth
+//                val iconRight = itemViewId.right - iconMargin
 //                leftIcon!!.setBounds(iconLeft, iconTop, iconRight, iconBottom)
 //
 //                leftBackground!!.setBounds(
-//                    itemView.right + dX.toInt() - backgroundCornerOffset,
-//                    itemView.top, itemView.right, itemView.bottom
+//                    itemViewId.right + dX.toInt() - backgroundCornerOffset,
+//                    itemViewId.top, itemViewId.right, itemViewId.bottom
 //                )
 //            }
 //            else -> {// view is unSwiped
@@ -150,19 +150,19 @@ class ItemSwipeCallback(private val mSwipeItemListener: OnSwipeItemListener, swi
     private fun b() {
 //          if (dX > 0) { // Swiping to the right
 //            rightIcon?.let {
-//                val iconMargin = (itemView.height - it.intrinsicHeight) / 2
-//                val iconTop = itemView.top + (itemView.height - it.intrinsicHeight) / 2
+//                val iconMargin = (itemViewId.height - it.intrinsicHeight) / 2
+//                val iconTop = itemViewId.top + (itemViewId.height - it.intrinsicHeight) / 2
 //                val iconBottom = iconTop + it.intrinsicHeight
 //
-//                val iconLeft = itemView.left + iconMargin + it.intrinsicWidth
-//                val iconRight = itemView.left + iconMargin
+//                val iconLeft = itemViewId.left + iconMargin + it.intrinsicWidth
+//                val iconRight = itemViewId.left + iconMargin
 //                it.setBounds(iconLeft, iconTop, iconRight, iconBottom)
 //
 //                rightBackground?.let { bg ->
 //                    bg.setBounds(
-//                        itemView.left, itemView.top,
-//                        itemView.left + dX.toInt() + backgroundCornerOffset,
-//                        itemView.bottom
+//                        itemViewId.left, itemViewId.top,
+//                        itemViewId.left + dX.toInt() + backgroundCornerOffset,
+//                        itemViewId.bottom
 //                    )
 //                    bg.draw(c)
 //                }
@@ -173,19 +173,19 @@ class ItemSwipeCallback(private val mSwipeItemListener: OnSwipeItemListener, swi
 //
 //        if (dX < 0) { // Swiping to the left
 //            leftIcon?.let {
-//                val iconMargin = (itemView.height - it.intrinsicHeight) / 2
-//                val iconTop = itemView.top + (itemView.height - it.intrinsicHeight) / 2
+//                val iconMargin = (itemViewId.height - it.intrinsicHeight) / 2
+//                val iconTop = itemViewId.top + (itemViewId.height - it.intrinsicHeight) / 2
 //                val iconBottom = iconTop + it.intrinsicHeight
 //
-//                val iconLeft = itemView.right - iconMargin - it.intrinsicWidth
-//                val iconRight = itemView.right - iconMargin
+//                val iconLeft = itemViewId.right - iconMargin - it.intrinsicWidth
+//                val iconRight = itemViewId.right - iconMargin
 //                leftIcon!!.setBounds(iconLeft, iconTop, iconRight, iconBottom)
 //
 //
 //                leftBackground?.let { bg ->
 //                    bg.setBounds(
-//                        itemView.right + dX.toInt() - backgroundCornerOffset,
-//                        itemView.top, itemView.right, itemView.bottom
+//                        itemViewId.right + dX.toInt() - backgroundCornerOffset,
+//                        itemViewId.top, itemViewId.right, itemViewId.bottom
 //                    )
 //                    bg.draw(c)
 //                }

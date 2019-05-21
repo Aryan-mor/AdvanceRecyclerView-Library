@@ -29,8 +29,8 @@ open class AdvanceRecyclerView : RecyclerView {
                 Exception("setOrientation value must be 0(AdvanceRecycleView.VERTICAL),1(AdvanceRecycleView.HORIZONTAL)")
             )
         }
-    @LayoutRes
-    var itemView = -1
+
+    var itemViews = hashMapOf<Int, ItemView>()
     @LayoutRes
     var loadingItemView = -1
         protected set
@@ -68,31 +68,34 @@ open class AdvanceRecyclerView : RecyclerView {
     var itemSwipeCallback: ItemSwipeCallback? = null
 
     //Animation
-    var itemAnimRes: Int = -1
     private var lastItemPosition = -1
 
 
     val count: Int
         get() = itemCount + 1
 
+
     //Functionality
 
     //    public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
+
     var myAdapter: RecyclerView.Adapter<*> = object : RecyclerView.Adapter<ViewHolder>() {
         override fun getItemViewType(position: Int): Int {
-
+            val viewType =
+                if (itemViews.size == 1) itemViews[itemViews.entries.first().key]!!.itemViewId else onAdapterListener!!.selectItemView(
+                    position
+                )
             advanceViewType =
-                if (!isInfinite && isPaginationLoadingNextPage && itemCount == position + 1) VIEW_TYPE_LOADING else VIEW_TYPE_ITEM
+                if (!isInfinite && isPaginationLoadingNextPage && itemCount == position + 1) VIEW_TYPE_LOADING else viewType
             return advanceViewType
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            if (advanceViewType == VIEW_TYPE_ITEM) {
-                if (itemView != -1) {
-                    val view = LayoutInflater.from(parent.context).inflate(itemView, parent, false)
-                    return ViewHolder(view)
-                }
-                return ViewHolder(onAdapterListener!!.onCreateViewHolder()!!)
+            if (advanceViewType != VIEW_TYPE_LOADING) {
+                val view = LayoutInflater.from(parent.context).inflate(itemViews[viewType]!!.itemViewId, parent, false)
+                val a = ViewHolder(view)
+                a.itemView.id = viewType
+                return a
             }
             if (loadingItemView != -1) {
                 val view = LayoutInflater.from(parent.context).inflate(loadingItemView, parent, false)
@@ -103,20 +106,21 @@ open class AdvanceRecyclerView : RecyclerView {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             var position = position
+            if (advanceViewType != loadingItemView) {
+                val item = itemViews[holder.itemView.id]!!
+                item.animation?.let {
+                    val animation = AnimationUtils.loadAnimation(context, it)
+                    holder.itemView.startAnimation(animation)
+                    lastItemPosition = position
+                }
 
-            if (itemAnimRes != -1) {
-                val animation = AnimationUtils.loadAnimation(context, itemAnimRes)
-                holder.itemView.startAnimation(animation)
-                lastItemPosition = position
-            }
-
-            if (advanceViewType == VIEW_TYPE_ITEM) {
                 if (onAdapterListener == null)
                     return
                 if (isInfinite) {
                     position = getItemPositionOnInfinity(position)
                 }
-                onAdapterListener!!.onBindViewHolder(holder, position)
+
+                onAdapterListener!!.onBindViewHolder(holder, position, item)
                 return
             }
             if (onPaginationLoadingAdapterListener == null)
@@ -148,18 +152,14 @@ open class AdvanceRecyclerView : RecyclerView {
     }
 
     fun init(
-        @LayoutRes itemView: Int, itemCount: Int = this.itemCount,
-        linearLayoutManager: LinearLayoutManager? = null
+        itemCount: Int = this.itemCount,
+        itemView: ItemView,
+        vararg itemViews: ItemView
     ) {
-        var linearLayoutManager = linearLayoutManager
-        this.itemView = itemView
-        linearLayoutManager ?: let {
-            linearLayoutManager = LinearLayoutManager(context)
+        this.itemViews[itemView.itemViewId] = itemView
+        itemViews.forEach {
+            this.itemViews[it.itemViewId] = it
         }
-        init(itemCount)
-    }
-
-    fun init(itemCount: Int) {
 
         setItemCount(itemCount)
         adapter = myAdapter
@@ -239,10 +239,8 @@ open class AdvanceRecyclerView : RecyclerView {
     }
 
     fun notifyItemRemove(itemPosition: Int) {
-        Log.e("Ari", "notifyItemInsert before remove -> $itemCount")
         myAdapter.notifyItemRemoved(itemPosition)
         setItemCount(count - 1, false)
-        Log.e("Ari", "notifyItemInsert before after -> $itemCount")
     }
 
     fun addNewItemCount(newItemCount: Int) {
@@ -267,23 +265,15 @@ open class AdvanceRecyclerView : RecyclerView {
         //        lm.smoothScrollToPosition(this, null, pos);
     }
 
-    fun setItemAnimation(@AnimRes animRes: Int = android.R.anim.slide_in_left) {
-        itemAnimRes = animRes
-    }
-
-    fun enableItemAnim() {
-        setItemAnimation(android.R.anim.slide_in_left)
-    }
-
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     //Listener
-    interface OnAdapterListener {
-        fun onCreateViewHolder(): View? {
-            return null
+    abstract class OnAdapterListener {
+        open fun selectItemView(nextPosition: Int): Int {
+            return -1
         }
 
-        fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        open fun onBindViewHolder(holder: ViewHolder, position: Int, itemView: ItemView) {
 
         }
     }
@@ -336,7 +326,7 @@ open class AdvanceRecyclerView : RecyclerView {
     }
 
     companion object {
-        val VERTICAL = LinearLayoutManager.VERTICAL
-        val HORIZONTAL = LinearLayoutManager.HORIZONTAL
+        const val VERTICAL = LinearLayoutManager.VERTICAL
+        const val HORIZONTAL = LinearLayoutManager.HORIZONTAL
     }
 }
